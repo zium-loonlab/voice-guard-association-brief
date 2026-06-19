@@ -15,432 +15,390 @@
 :root{
  --font-base:'Pretendard JP','Pretendard Variable','Pretendard',-apple-system,'Apple SD Gothic Neo',system-ui,sans-serif;
  --font-display:'Wanted Sans Variable','Wanted Sans','Pretendard JP',system-ui,sans-serif;
- --paper:#ffffff; --mist:#F1F5FC; --ink:#13151A; --muted:#5C6577;
+ --paper:#ffffff; --mist:#F2F5FB; --ink:#13151A; --muted:#5C6577; --faint:#8A93A3;
  --line:rgba(18,28,48,.10);
  --blue:#0066FF; --blue-strong:#0054D1; --cyan:#00BDDE; --violet:#6541F2;
- --dark:#070A12;
- --t-hero:108px; --t-title:62px; --t-subtitle:42px; --t-lead:33px;
- --t-body:27px; --t-small:24px; --t-label:24px; --t-num:320px;
- --pad-x:112px; --pad-y:86px;
+ --nav:296px;
 }
 *{box-sizing:border-box;}
-body{margin:0;font-family:var(--font-base);background:#0a0c12;}
-section{font-family:var(--font-base);}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:var(--font-base);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;}
+section{scroll-margin-top:28px;}
+.navlink{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:10px;color:var(--muted);font:600 15.5px/1.3 var(--font-base);border-left:3px solid transparent;cursor:pointer;}
+.navlink:hover{background:var(--mist);color:var(--ink);}
+.navlink.nav-active{background:#EAF2FE;color:var(--blue-strong);border-left-color:var(--blue);}
+.shot{position:relative;cursor:zoom-in;transition:box-shadow .2s,transform .2s;}
+.shot:hover{transform:translateY(-2px);}
+.shot .zoomhint{opacity:0;transition:opacity .18s;pointer-events:none;}
+.shot:hover .zoomhint{opacity:1;}
+#lightbox{display:none;}
+@media print{aside{display:none!important;}main{margin-left:0!important;}}
 </style>
+<script>
+(function(){
+ document.addEventListener('click',function(e){
+  var lb=document.getElementById('lightbox');
+  var hit=e.target.closest('.shot');
+  if(hit&&hit.getAttribute('data-full')){ if(lb){document.getElementById('lightbox-img').src=hit.getAttribute('data-full');lb.style.display='flex';} return; }
+  if(lb&&lb.style.display==='flex'){ lb.style.display='none'; }
+ });
+ document.addEventListener('keydown',function(e){ if(e.key==='Escape'){var lb=document.getElementById('lightbox');if(lb)lb.style.display='none';} });
+ function setupNav(){
+  var links=Array.prototype.slice.call(document.querySelectorAll('[data-nav]'));
+  if(!links.length){return setTimeout(setupNav,250);}
+  var map={};links.forEach(function(l){map[l.getAttribute('data-nav')]=l;});
+  var io=new IntersectionObserver(function(ents){
+   ents.forEach(function(en){ if(en.isIntersecting){ links.forEach(function(l){l.classList.remove('nav-active');}); var m=map[en.target.id]; if(m)m.classList.add('nav-active'); } });
+  },{rootMargin:'-42% 0px -52% 0px',threshold:0});
+  document.querySelectorAll('section[id]').forEach(function(s){io.observe(s);});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(setupNav,300);});else setTimeout(setupNav,300);
+})();
+</script>
 </helmet>
-<x-import component-from-global-scope="deck-stage" from="./deck-stage.js" width="1920" height="1080" hint-size="100%,100%">
 
-<section data-label="표지" data-screen-label="표지" data-speaker-notes="성우협회에 드리는 Voice Guard 프로젝트 진행 현황 보고입니다. 서비스명은 가칭입니다.">
- <div style="position:absolute;inset:0;background:radial-gradient(1100px 700px at 88% -8%, #E8F1FF 0%, rgba(232,241,255,0) 60%), radial-gradient(900px 600px at -6% 108%, #F0ECFE 0%, rgba(240,236,254,0) 55%), var(--paper);padding:var(--pad-y) var(--pad-x);display:flex;flex-direction:column;justify-content:center;overflow:hidden;">
-  <div style="position:absolute;top:118px;right:118px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle at 30% 30%, rgba(0,189,222,.22), rgba(0,102,255,.10) 60%, transparent 72%);filter:blur(6px);"></div>
-  <div style="display:flex;align-items:center;gap:18px;margin-bottom:64px;">
-   <div style="width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,#0066FF,#00BDDE);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(0,102,255,.36);">
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M12 2 4 5v6c0 5 3.4 8.2 8 9 4.6-.8 8-4 8-9V5l-8-3Z" fill="#fff"/><path d="m8.4 12 2.4 2.4L15.8 9.4" stroke="#0066FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-   </div>
-   <span style="font:800 30px/1 var(--font-display);color:var(--ink);letter-spacing:-.01em;">MUIZ <span style="color:var(--blue);">Voice Guard</span></span>
+<aside style="position:fixed;left:0;top:0;width:var(--nav);height:100vh;overflow-y:auto;background:#fff;border-right:1px solid var(--line);padding:30px 22px 26px;display:flex;flex-direction:column;z-index:40;">
+ <a href="#intro" style="display:flex;align-items:center;gap:13px;margin-bottom:30px;">
+  <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#0066FF,#00BDDE);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,102,255,.32);">
+   <svg width="23" height="23" viewBox="0 0 24 24" fill="none"><path d="M12 2 4 5v6c0 5 3.4 8.2 8 9 4.6-.8 8-4 8-9V5l-8-3Z" fill="#fff"/><path d="m8.4 12 2.4 2.4L15.8 9.4" stroke="#0066FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
-  <div style="font:800 var(--t-label)/1 var(--font-base);letter-spacing:.18em;color:var(--blue);margin-bottom:26px;">프로젝트 진행 현황 보고</div>
-  <h1 style="font:800 var(--t-hero)/1.04 var(--font-display);letter-spacing:-.03em;color:var(--ink);margin:0;">목소리를 지키는<br>가장 확실한 방법</h1>
-  <p style="font:500 var(--t-lead)/1.55 var(--font-base);color:var(--muted);margin:34px 0 0;max-width:1020px;">성우의 목소리 권리를 24시간 모니터링하고, 무단 사용을 탐지·분석해 증거로 남기는 솔루션입니다. 현재까지의 진행 상황을 정리했습니다.</p>
-  <div style="margin-top:auto;display:flex;align-items:flex-end;gap:20px;font:600 var(--t-small)/1.35 var(--font-base);color:var(--muted);">
-   <span>성우협회 귀하<br>지음지식서비스 지음 AI<br>2026.06</span>
-   <span style="margin-left:auto;font:500 22px/1 var(--font-base);color:#9aa3b2;">※ 서비스명 Voice Guard는 가칭이며 추후 변경될 수 있습니다.</span>
-  </div>
+  <div><div style="font:800 19px/1.05 var(--font-display);color:var(--ink);letter-spacing:-.01em;">MUIZ <span style="color:var(--blue);">Voice Guard</span></div><div style="font:600 12px/1.2 var(--font-base);color:var(--faint);margin-top:3px;">프로젝트 진행 안내</div></div>
+ </a>
+
+ <nav style="display:flex;flex-direction:column;gap:4px;">
+  <div style="font:700 12px/1 var(--font-base);letter-spacing:.12em;color:var(--faint);padding:14px 14px 8px;">개요</div>
+  <a class="navlink" data-nav="intro" href="#intro">소개</a>
+  <a class="navlink" data-nav="background" href="#background">보고 배경</a>
+  <a class="navlink" data-nav="structure" href="#structure">시스템 구성</a>
+  <div style="font:700 12px/1 var(--font-base);letter-spacing:.12em;color:var(--faint);padding:18px 14px 8px;">운영자 콘솔 · 지음</div>
+  <a class="navlink" data-nav="register" href="#register">보이스 등록</a>
+  <a class="navlink" data-nav="manage" href="#manage">내 보이스 관리</a>
+  <a class="navlink" data-nav="detect" href="#detect">무단 사용 탐지</a>
+  <a class="navlink" data-nav="auto" href="#auto">자동 탐지</a>
+  <div style="font:700 12px/1 var(--font-base);letter-spacing:.12em;color:var(--faint);padding:18px 14px 8px;">클라이언트 페이지 · 고객</div>
+  <a class="navlink" data-nav="login" href="#login">로그인</a>
+  <a class="navlink" data-nav="client" href="#client">탐지 현황</a>
+  <a class="navlink" data-nav="report" href="#report">증거 &amp; 리포트</a>
+  <a class="navlink" data-nav="request" href="#request">요청하기</a>
+  <div style="font:700 12px/1 var(--font-base);letter-spacing:.12em;color:var(--faint);padding:18px 14px 8px;">마무리</div>
+  <a class="navlink" data-nav="next" href="#next">다음 단계</a>
+ </nav>
+
+ <div style="margin-top:auto;padding-top:24px;font:500 12.5px/1.6 var(--font-base);color:var(--faint);">
+  성우협회 귀하<br>지음지식서비스 지음 AI<br>2026.06<br><span style="color:#aab2c0;">※ 서비스명 Voice Guard는 가칭이며 추후 변경될 수 있습니다.</span>
  </div>
-</section>
+</aside>
 
-<section data-label="보고 배경" data-screen-label="보고 배경" data-speaker-notes="원래 다크 테마 페이지를 고객에게 제공할 계획이었으나, 기능이 늘며 조작이 어려워져 지음이 자동 운영하고 고객에게는 별도 화이트 클라이언트 페이지를 제공하기로 했습니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--blue);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--blue);"></span>BACKGROUND</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">운영 방식의 전환</h2>
-  <div style="flex:1;display:flex;align-items:center;gap:44px;margin-top:40px;min-height:0;">
-   <div style="flex:1;background:var(--mist);border:1px solid var(--line);border-radius:22px;padding:46px 44px;align-self:stretch;display:flex;flex-direction:column;">
-    <div style="font:700 var(--t-small)/1 var(--font-base);color:var(--muted);letter-spacing:.04em;">기존 계획</div>
-    <h3 style="font:700 38px/1.25 var(--font-base);color:var(--ink);margin:18px 0 0;">다크 테마 페이지를<br>고객에게 직접 제공</h3>
-    <p style="font:500 var(--t-body)/1.6 var(--font-base);color:var(--muted);margin:auto 0 0;">수집·분석·탐지까지 모든 기능을 권리자가 직접 다루는 구조였습니다.</p>
-   </div>
-   <div style="flex:none;width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#0066FF,#00BDDE);display:flex;align-items:center;justify-content:center;box-shadow:0 16px 34px rgba(0,102,255,.3);">
-    <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M4 12h15M13 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-   </div>
-   <div style="flex:1.18;background:linear-gradient(135deg,#0A1830,#0E2342);border-radius:22px;padding:46px 44px;align-self:stretch;display:flex;flex-direction:column;color:#fff;box-shadow:0 26px 60px -22px rgba(8,20,45,.6);">
-    <div style="font:700 var(--t-small)/1 var(--font-base);color:var(--cyan);letter-spacing:.04em;">변경된 방향</div>
-    <h3 style="font:700 38px/1.25 var(--font-base);color:#fff;margin:18px 0 0;">지음이 자동으로 운영,<br>고객에겐 결과 페이지 제공</h3>
-    <p style="font:500 var(--t-body)/1.6 var(--font-base);color:rgba(255,255,255,.78);margin:20px 0 0;">기능이 늘며 조작 난이도가 높아졌습니다. 수집·분석은 <b style="color:#fff;">지음이 자동 실행</b>하고, 권리자에게는 결과만 보는 <b style="color:var(--cyan);">화이트 테마 클라이언트 페이지</b>를 별도로 제공합니다.</p>
+<main style="margin-left:var(--nav);">
+
+ <section id="intro" style="position:relative;overflow:hidden;background:radial-gradient(1000px 600px at 90% -10%, #E3EEFF 0%, rgba(227,238,255,0) 60%), radial-gradient(800px 520px at -5% 110%, #F0ECFE 0%, rgba(240,236,254,0) 55%), #fff;padding:118px 72px 96px;">
+  <div style="max-width:1120px;">
+   <div style="display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 16px;font:700 13px/1 var(--font-base);letter-spacing:.04em;color:var(--blue);box-shadow:0 4px 14px rgba(0,102,255,.1);"><span style="width:7px;height:7px;border-radius:50%;background:var(--cyan);"></span>AI 기반 보이스 권리 보호 솔루션</div>
+   <h1 style="font:800 62px/1.1 var(--font-display);letter-spacing:-.03em;color:var(--ink);margin:26px 0 0;">목소리를 지키는<br>가장 확실한 방법</h1>
+   <p style="font:500 21px/1.65 var(--font-base);color:var(--muted);margin:26px 0 0;max-width:760px;">성우의 목소리 권리를 24시간 모니터링하고, 무단 사용을 탐지·분석해 증거로 남기는 솔루션입니다. 아래에서 현재까지의 진행 상황을 항목별로 살펴보실 수 있습니다.</p>
+   <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:38px;">
+    <div style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 28px;box-shadow:0 8px 24px -14px rgba(8,20,45,.2);"><div style="font:800 34px/1 var(--font-display);color:var(--blue);">2</div><div style="font:600 14px/1.4 var(--font-base);color:var(--muted);margin-top:8px;">운영자 · 고객 화면</div></div>
+    <div style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 28px;box-shadow:0 8px 24px -14px rgba(8,20,45,.2);"><div style="font:800 34px/1 var(--font-display);color:var(--cyan);">3단계</div><div style="font:600 14px/1.4 var(--font-base);color:var(--muted);margin-top:8px;">등록 · 탐지 · 대응</div></div>
+    <div style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 28px;box-shadow:0 8px 24px -14px rgba(8,20,45,.2);"><div style="font:800 34px/1 var(--font-display);color:var(--violet);">24h</div><div style="font:600 14px/1.4 var(--font-base);color:var(--muted);margin-top:8px;">AI 자동 모니터링</div></div>
    </div>
   </div>
- </div>
-</section>
+ </section>
 
-<section data-label="시스템 구성" data-screen-label="시스템 구성" data-speaker-notes="두 개의 화면으로 구성됩니다. 운영자 콘솔(다크)은 지음 내부 운영용, 클라이언트 페이지(화이트)는 권리자 제공용입니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--blue);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--blue);"></span>STRUCTURE</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">두 개의 화면으로 구성</h2>
-  <div style="flex:1;display:flex;gap:40px;margin-top:40px;min-height:0;">
-   <div style="flex:1;display:flex;flex-direction:column;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;"><span style="padding:6px 14px;border-radius:999px;background:#0E2342;color:var(--cyan);font:700 22px/1 var(--font-base);">운영자 콘솔 · 다크</span><span style="font:600 22px/1 var(--font-base);color:var(--muted);">지음 내부 운영</span></div>
-    <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 22px 50px -22px rgba(8,20,45,.45);background:#0a0c12;display:flex;flex-direction:column;min-height:0;">
-     <div style="height:42px;display:flex;align-items:center;gap:8px;padding:0 18px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span></div>
-     <img src="uploads/4.png" alt="운영자 콘솔" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
+ <section id="background" style="padding:74px 72px;border-top:1px solid var(--line);">
+  <div style="max-width:1120px;">
+   <div style="font:700 14px/1 var(--font-base);letter-spacing:.1em;color:var(--blue);">개요</div>
+   <h2 style="font:800 38px/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:14px 0 0;">보고 배경 — 운영 방식의 전환</h2>
+   <p style="font:500 18px/1.7 var(--font-base);color:var(--muted);margin:16px 0 0;max-width:820px;">처음에는 지금 보시는 다크 테마 페이지를 고객(권리자)에게 직접 제공할 계획이었습니다. 그러나 여러 기능이 더해지며 조작 난이도가 높아져, 운영 방식을 다음과 같이 바꿨습니다.</p>
+   <div style="display:flex;gap:24px;margin-top:36px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:300px;background:var(--mist);border:1px solid var(--line);border-radius:18px;padding:32px 34px;">
+     <div style="font:700 14px/1 var(--font-base);color:var(--muted);">기존 계획</div>
+     <h3 style="font:700 24px/1.35 var(--font-base);color:var(--ink);margin:14px 0 10px;">다크 테마 페이지를 고객에게 직접 제공</h3>
+     <p style="font:500 16px/1.6 var(--font-base);color:var(--muted);margin:0;">수집·분석·탐지까지 모든 기능을 권리자가 직접 다루는 구조였습니다.</p>
     </div>
-    <p style="font:500 var(--t-small)/1.5 var(--font-base);color:var(--muted);margin:18px 0 0;">보이스 등록 · 무단 사용 탐지 · 자동 탐지 — 복잡한 수집/분석을 지음이 직접 실행합니다.</p>
-   </div>
-   <div style="flex:1;display:flex;flex-direction:column;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;"><span style="padding:6px 14px;border-radius:999px;background:var(--blue);color:#fff;font:700 22px/1 var(--font-base);">클라이언트 · 화이트</span><span style="font:600 22px/1 var(--font-base);color:var(--muted);">권리자 제공</span></div>
-    <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 22px 50px -22px rgba(8,20,45,.28);background:#fff;display:flex;flex-direction:column;min-height:0;">
-     <div style="height:42px;display:flex;align-items:center;gap:8px;padding:0 18px;background:var(--mist);border-bottom:1px solid var(--line);"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span></div>
-     <img src="uploads/13.png" alt="클라이언트 페이지" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
-    </div>
-    <p style="font:500 var(--t-small)/1.5 var(--font-base);color:var(--muted);margin:18px 0 0;">로그인 · 탐지 내역 · 증거 리포트 · 요청하기 — 본인 목소리 결과만 간편하게 확인합니다.</p>
-   </div>
-  </div>
- </div>
-</section>
-
-<section data-label="01 보이스 등록" data-screen-label="섹션 01 보이스 등록" data-speaker-notes="섹션 1. 전달받은 음성 데이터를 권리자와 보이스 단위로 등록합니다.">
- <div style="position:absolute;inset:0;background:radial-gradient(900px 600px at 82% 12%, #0E2A4D 0%, rgba(14,42,77,0) 60%), var(--dark);padding:var(--pad-y) var(--pad-x);display:flex;flex-direction:column;justify-content:center;overflow:hidden;">
-  <div style="font:800 var(--t-label)/1 var(--font-base);letter-spacing:.2em;color:var(--cyan);margin-bottom:8px;">운영자 워크플로 · 지음 내부 운영</div>
-  <div style="display:flex;align-items:flex-start;gap:40px;">
-   <span style="font:800 var(--t-num)/.82 var(--font-display);color:transparent;-webkit-text-stroke:2px rgba(0,189,222,.55);letter-spacing:-.04em;">01</span>
-   <div style="padding-top:36px;">
-    <h2 style="font:800 84px/1.06 var(--font-display);letter-spacing:-.02em;color:#fff;margin:0;">보이스 등록</h2>
-    <p style="font:500 var(--t-lead)/1.5 var(--font-base);color:rgba(255,255,255,.72);margin:24px 0 0;max-width:760px;">전달받은 음성 데이터를 권리자명과 보이스(캐릭터명) 단위로 구분해 등록합니다.</p>
-   </div>
-  </div>
- </div>
-</section>
-
-<section data-label="보이스 등록 · 구분" data-screen-label="보이스 등록 구분" data-speaker-notes="권리자명과 보이스(캐릭터명)로 구분 등록하고, 한 권리자가 여러 보이스를 관리합니다. 보이스 1개당 최소 20분 음성이 필요합니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;justify-content:space-between;align-items:center;">
-   <div style="display:flex;align-items:center;gap:14px;color:var(--blue);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--blue);"></span>01 · 보이스 등록</div>
-  </div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">권리자와 보이스를 구분해 등록</h2>
-  <div style="flex:1;display:flex;gap:56px;margin-top:38px;min-height:0;align-items:center;">
-   <div style="flex:none;width:640px;display:flex;flex-direction:column;gap:26px;">
-    <div style="display:flex;gap:18px;align-items:flex-start;"><div style="flex:none;width:40px;height:40px;border-radius:11px;background:var(--blue);color:#fff;font:700 22px/40px var(--font-base);text-align:center;">1</div><p style="font:500 var(--t-body)/1.55 var(--font-base);color:var(--ink);margin:0;">전달받은 음성 데이터를 <b>권리자명</b>과 <b>보이스(캐릭터명)</b> 기준으로 구분해 등록합니다.</p></div>
-    <div style="display:flex;gap:18px;align-items:flex-start;"><div style="flex:none;width:40px;height:40px;border-radius:11px;background:var(--blue);color:#fff;font:700 22px/40px var(--font-base);text-align:center;">2</div><p style="font:500 var(--t-body)/1.55 var(--font-base);color:var(--ink);margin:0;">한 명의 권리자가 <b>여러 보이스</b>를 함께 관리할 수 있도록 제작했습니다.</p></div>
-    <div style="margin-top:8px;background:linear-gradient(135deg,#EAF2FE,#F0ECFE);border:1px solid var(--line);border-radius:18px;padding:30px 32px;">
-     <div style="font:600 var(--t-small)/1 var(--font-base);color:var(--muted);">등록 요건</div>
-     <div style="display:flex;align-items:baseline;gap:14px;margin-top:12px;"><span style="font:800 64px/1 var(--font-display);color:var(--blue);">20분</span><span style="font:600 var(--t-body)/1.3 var(--font-base);color:var(--ink);">보이스 1개당 최소 음성 분량</span></div>
-    </div>
-   </div>
-   <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 26px 56px -24px rgba(8,20,45,.5);background:#0a0c12;align-self:stretch;display:flex;flex-direction:column;min-height:0;">
-    <div style="height:46px;flex:none;display:flex;align-items:center;gap:8px;padding:0 18px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span></div>
-    <img src="uploads/1.png" alt="보이스 등록 기본 정보" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
-   </div>
-  </div>
- </div>
-</section>
-
-<section data-label="보이스 등록 · 샘플" data-screen-label="보이스 등록 샘플" data-speaker-notes="샘플 파일을 업로드하면 길이와 포맷을 자동 검증하고, 기본 정보까지 입력되면 등록이 완료됩니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--blue);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--blue);"></span>01 · 보이스 등록</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">샘플 업로드부터 등록 완료까지</h2>
-  <div style="flex:1;display:flex;gap:34px;margin-top:36px;min-height:0;">
-   <div style="flex:1;display:flex;flex-direction:column;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><span style="font:700 22px/1 var(--font-base);color:#fff;background:var(--blue);border-radius:8px;padding:7px 12px;">STEP 1</span><span style="font:700 var(--t-small)/1 var(--font-base);color:var(--ink);">샘플 파일 업로드 · 자동 검증</span></div>
-    <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 22px 50px -24px rgba(8,20,45,.45);background:#0a0c12;display:flex;flex-direction:column;min-height:0;">
-     <div style="height:42px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
-     <img src="uploads/2.png" alt="샘플 업로드" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
-    </div>
-   </div>
-   <div style="flex:1;display:flex;flex-direction:column;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><span style="font:700 22px/1 var(--font-base);color:#fff;background:var(--cyan);border-radius:8px;padding:7px 12px;">STEP 2</span><span style="font:700 var(--t-small)/1 var(--font-base);color:var(--ink);">검토 후 등록 완료</span></div>
-    <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 22px 50px -24px rgba(8,20,45,.45);background:#0a0c12;display:flex;flex-direction:column;min-height:0;">
-     <div style="height:42px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
-     <img src="uploads/3.png" alt="등록 완료" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
+    <div style="flex:1.2;min-width:300px;background:linear-gradient(135deg,#0A1830,#0E2342);border-radius:18px;padding:32px 34px;color:#fff;box-shadow:0 20px 48px -24px rgba(8,20,45,.5);">
+     <div style="font:700 14px/1 var(--font-base);color:var(--cyan);">변경된 방향</div>
+     <h3 style="font:700 24px/1.35 var(--font-base);color:#fff;margin:14px 0 10px;">지음이 자동 운영, 고객에겐 결과 페이지 제공</h3>
+     <p style="font:500 16px/1.65 var(--font-base);color:rgba(255,255,255,.8);margin:0;">수집·분석은 <b style="color:#fff;">지음이 자동으로 실행</b>하고, 권리자에게는 결과만 보는 <b style="color:var(--cyan);">화이트 테마 클라이언트 페이지</b>를 별도로 제공합니다.</p>
     </div>
    </div>
   </div>
-  <p style="font:500 var(--t-small)/1.5 var(--font-base);color:var(--muted);margin:20px 0 0;">WAV·MP3·M4A 파일을 지원하며, 총 길이 20분 이상과 필수 정보가 충족되면 등록 준비가 100% 완료됩니다.</p>
- </div>
-</section>
+ </section>
 
-<section data-label="02 내 보이스 관리" data-screen-label="섹션 02 내 보이스 관리" data-speaker-notes="섹션 2. 등록된 보이스를 관리하는 페이지입니다.">
- <div style="position:absolute;inset:0;background:radial-gradient(900px 600px at 82% 12%, #0E2A4D 0%, rgba(14,42,77,0) 60%), var(--dark);padding:var(--pad-y) var(--pad-x);display:flex;flex-direction:column;justify-content:center;overflow:hidden;">
-  <div style="font:800 var(--t-label)/1 var(--font-base);letter-spacing:.2em;color:var(--cyan);margin-bottom:8px;">운영자 워크플로 · 지음 내부 운영</div>
-  <div style="display:flex;align-items:flex-start;gap:40px;">
-   <span style="font:800 var(--t-num)/.82 var(--font-display);color:transparent;-webkit-text-stroke:2px rgba(0,189,222,.55);letter-spacing:-.04em;">02</span>
-   <div style="padding-top:36px;">
-    <h2 style="font:800 84px/1.06 var(--font-display);letter-spacing:-.02em;color:#fff;margin:0;">내 보이스 관리</h2>
-    <p style="font:500 var(--t-lead)/1.5 var(--font-base);color:rgba(255,255,255,.72);margin:24px 0 0;max-width:760px;">등록된 보이스의 메타 정보와 샘플을 관리합니다.</p>
-   </div>
-  </div>
- </div>
-</section>
-
-<section data-label="내 보이스 관리" data-screen-label="내 보이스 관리" data-speaker-notes="등록 보이스 목록과 카테고리·톤·라이선스 등 메타 정보를 관리하고, 샘플을 추가하거나 상세를 확인합니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--blue);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--blue);"></span>02 · 내 보이스 관리</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">등록된 보이스를 한눈에</h2>
-  <div style="flex:1;display:flex;gap:56px;margin-top:38px;min-height:0;align-items:center;">
-   <div style="flex:none;width:600px;display:flex;flex-direction:column;gap:24px;">
-    <p style="font:500 var(--t-body)/1.6 var(--font-base);color:var(--ink);margin:0;">등록한 보이스 목록과 마켓 노출 설정(카테고리·톤·라이선스·금지어·금액 등)을 관리합니다. 보이스별로 <b>샘플을 추가</b>하거나 <b>상세 정보</b>를 확인할 수 있습니다.</p>
-    <div style="display:flex;gap:18px;">
-     <div style="flex:1;background:var(--mist);border:1px solid var(--line);border-radius:18px;padding:26px 28px;"><div style="font:600 var(--t-small)/1 var(--font-base);color:var(--muted);">총 보이스 수</div><div style="font:800 60px/1 var(--font-display);color:var(--blue);margin-top:12px;">10</div></div>
-     <div style="flex:1;background:var(--mist);border:1px solid var(--line);border-radius:18px;padding:26px 28px;"><div style="font:600 var(--t-small)/1 var(--font-base);color:var(--muted);">총 샘플 수</div><div style="font:800 60px/1 var(--font-display);color:var(--cyan);margin-top:12px;">162</div></div>
+ <section id="structure" style="padding:74px 72px;background:var(--mist);border-top:1px solid var(--line);">
+  <div style="max-width:1120px;">
+   <div style="font:700 14px/1 var(--font-base);letter-spacing:.1em;color:var(--blue);">개요</div>
+   <h2 style="font:800 38px/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:14px 0 0;">시스템 구성 — 두 개의 화면</h2>
+   <div style="display:flex;gap:30px;margin-top:34px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:340px;">
+     <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px;"><span style="padding:6px 13px;border-radius:999px;background:#0E2342;color:var(--cyan);font:700 14px/1 var(--font-base);">운영자 콘솔 · 다크</span><span style="font:600 14px/1 var(--font-base);color:var(--muted);">지음 내부 운영</span></div>
+     <div class="shot" data-full="uploads/4.png" style="border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px -24px rgba(8,20,45,.4);background:#0a0c12;">
+      <div style="height:38px;display:flex;align-items:center;gap:7px;padding:0 15px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
+      <img src="uploads/4.png" alt="운영자 콘솔" style="display:block;width:100%;">
+      <div class="zoomhint" style="position:absolute;top:50px;right:14px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 11px;font:600 13px/1 var(--font-base);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+     </div>
+     <p style="font:500 15px/1.55 var(--font-base);color:var(--muted);margin:14px 0 0;">보이스 등록 · 무단 사용 탐지 · 자동 탐지 — 복잡한 수집/분석을 지음이 직접 실행합니다.</p>
     </div>
-   </div>
-   <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 26px 56px -24px rgba(8,20,45,.5);background:#0a0c12;align-self:stretch;display:flex;flex-direction:column;min-height:0;">
-    <div style="height:46px;flex:none;display:flex;align-items:center;gap:8px;padding:0 18px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span></div>
-    <img src="uploads/4.png" alt="내 보이스 관리" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
-   </div>
-  </div>
- </div>
-</section>
-
-<section data-label="03 무단 사용 탐지" data-screen-label="섹션 03 무단 사용 탐지" data-speaker-notes="섹션 3. 키워드 기반 검색으로 무단 사용을 탐지합니다.">
- <div style="position:absolute;inset:0;background:radial-gradient(900px 600px at 82% 12%, #0E2A4D 0%, rgba(14,42,77,0) 60%), var(--dark);padding:var(--pad-y) var(--pad-x);display:flex;flex-direction:column;justify-content:center;overflow:hidden;">
-  <div style="font:800 var(--t-label)/1 var(--font-base);letter-spacing:.2em;color:var(--cyan);margin-bottom:8px;">운영자 워크플로 · 지음 내부 운영</div>
-  <div style="display:flex;align-items:flex-start;gap:40px;">
-   <span style="font:800 var(--t-num)/.82 var(--font-display);color:transparent;-webkit-text-stroke:2px rgba(0,189,222,.55);letter-spacing:-.04em;">03</span>
-   <div style="padding-top:36px;">
-    <h2 style="font:800 84px/1.06 var(--font-display);letter-spacing:-.02em;color:#fff;margin:0;">무단 사용 탐지</h2>
-    <p style="font:500 var(--t-lead)/1.5 var(--font-base);color:rgba(255,255,255,.72);margin:24px 0 0;max-width:820px;">권리자명·캐릭터명·키워드를 조합해 영상 플랫폼에서 무단 사용을 찾아냅니다.</p>
-   </div>
-  </div>
- </div>
-</section>
-
-<section data-label="무단 탐지 · 검색" data-screen-label="무단 탐지 검색" data-speaker-notes="권리자명·캐릭터명·추가 키워드를 AI가 조합해 검색어를 만들고, 유튜브·틱톡·인스타그램에서 영상을 수집·분석합니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--blue);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--blue);"></span>03 · 무단 사용 탐지</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">키워드 기반 검색</h2>
-  <div style="flex:1;display:flex;gap:56px;margin-top:38px;min-height:0;align-items:center;">
-   <div style="flex:none;width:640px;display:flex;flex-direction:column;gap:24px;">
-    <p style="font:500 var(--t-body)/1.55 var(--font-base);color:var(--ink);margin:0;"><b>AI가 검색어를 조합</b>합니다. 권리자명·캐릭터명에 추가 키워드를 더해 검색 조합을 생성합니다.</p>
-    <p style="font:500 var(--t-body)/1.55 var(--font-base);color:var(--ink);margin:0;"><b>YouTube · TikTok · Instagram</b> 등 영상 유통 플랫폼에서 영상을 수집하고 분석합니다.</p>
-    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
-     <span style="font:600 22px/1 var(--font-base);color:var(--blue-strong);background:#EAF2FE;border:1px solid #C9DEFE;border-radius:999px;padding:10px 16px;">캐릭터 AI 커버</span>
-     <span style="font:600 22px/1 var(--font-base);color:var(--blue-strong);background:#EAF2FE;border:1px solid #C9DEFE;border-radius:999px;padding:10px 16px;">보이스 클론</span>
-     <span style="font:600 22px/1 var(--font-base);color:var(--blue-strong);background:#EAF2FE;border:1px solid #C9DEFE;border-radius:999px;padding:10px 16px;">목소리 합성</span>
-     <span style="font:600 22px/1 var(--font-base);color:var(--blue-strong);background:#EAF2FE;border:1px solid #C9DEFE;border-radius:999px;padding:10px 16px;">AI 더빙</span>
-     <span style="font:600 22px/1 var(--font-base);color:var(--muted);background:var(--mist);border:1px solid var(--line);border-radius:999px;padding:10px 16px;">약 20개 조합 자동 생성</span>
-    </div>
-   </div>
-   <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 26px 56px -24px rgba(8,20,45,.5);background:#0a0c12;align-self:stretch;display:flex;flex-direction:column;min-height:0;">
-    <div style="height:46px;flex:none;display:flex;align-items:center;gap:8px;padding:0 18px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span></div>
-    <img src="uploads/5.png" alt="무단 사용 탐지 설정" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
-   </div>
-  </div>
- </div>
-</section>
-
-<section data-label="탐지 진행·결과" data-screen-label="탐지 진행 결과" data-speaker-notes="수집→후보 검토→AI 분석→보고서로 진행됩니다. 임호기 보이스는 875건 중 109건이 의심 후보로 수집됐으나 키워드만으로는 AI 합성이 발견되지 않아 모두 위험 낮음으로 분류됐습니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--blue);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--blue);"></span>03 · 무단 사용 탐지</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">탐지 진행과 결과 확인</h2>
-  <div style="flex:1;display:flex;gap:34px;margin-top:36px;min-height:0;">
-   <div style="flex:1;display:flex;flex-direction:column;">
-    <div style="font:700 var(--t-small)/1 var(--font-base);color:var(--ink);margin-bottom:14px;">진행 — 실시간 파이프라인</div>
-    <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 22px 50px -24px rgba(8,20,45,.45);background:#0a0c12;display:flex;flex-direction:column;min-height:0;">
-     <div style="height:42px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
-     <img src="uploads/6.png" alt="탐지 진행 현황" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
-    </div>
-   </div>
-   <div style="flex:1;display:flex;flex-direction:column;">
-    <div style="font:700 var(--t-small)/1 var(--font-base);color:var(--ink);margin-bottom:14px;">결과 — AI 유사도 분석</div>
-    <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 22px 50px -24px rgba(8,20,45,.45);background:#0a0c12;display:flex;flex-direction:column;min-height:0;">
-     <div style="height:42px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
-     <img src="uploads/7.png" alt="AI 유사도 분석 결과" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
+    <div style="flex:1;min-width:340px;">
+     <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px;"><span style="padding:6px 13px;border-radius:999px;background:var(--blue);color:#fff;font:700 14px/1 var(--font-base);">클라이언트 · 화이트</span><span style="font:600 14px/1 var(--font-base);color:var(--muted);">권리자 제공</span></div>
+     <div class="shot" data-full="uploads/13.png" style="border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px -24px rgba(8,20,45,.28);background:#fff;">
+      <div style="height:38px;display:flex;align-items:center;gap:7px;padding:0 15px;background:#fff;border-bottom:1px solid var(--line);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
+      <img src="uploads/13.png" alt="클라이언트 페이지" style="display:block;width:100%;">
+      <div class="zoomhint" style="position:absolute;top:50px;right:14px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 11px;font:600 13px/1 var(--font-base);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+     </div>
+     <p style="font:500 15px/1.55 var(--font-base);color:var(--muted);margin:14px 0 0;">로그인 · 탐지 내역 · 증거 리포트 · 요청하기 — 본인 목소리 결과만 간편하게 확인합니다.</p>
     </div>
    </div>
   </div>
-  <p style="font:500 var(--t-small)/1.5 var(--font-base);color:var(--muted);margin:20px 0 0;">임호기 보이스는 875건 중 <b style="color:var(--ink);">109건</b>이 의심 후보로 수집됐으나, 키워드 검색만으로는 AI 합성 콘텐츠가 발견되지 않아 모두 '위험 낮음'으로 분류됐습니다.</p>
- </div>
-</section>
+ </section>
 
-<section data-label="유사도 검증 사례" data-screen-label="유사도 검증 박상경" data-speaker-notes="박상경 성우님은 키워드로 AI 합성이 발견되지 않아, 유사도 분석 검증을 위해 실제 실연 영상을 분석했습니다. 최대 90.87%의 고위험 수치로 유사도 분석이 정확히 식별함을 확인. 샘플이 3~4분이라 정확도는 다소 낮았고, 샘플을 늘리면 더 높아집니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--blue);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--blue);"></span>03 · 유사도 분석 검증</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">검증 사례 — 박상경 성우님</h2>
-  <div style="flex:1;display:flex;gap:48px;margin-top:36px;min-height:0;align-items:stretch;">
-   <div style="flex:1.25;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 26px 56px -24px rgba(8,20,45,.5);background:#0a0c12;display:flex;flex-direction:column;min-height:0;">
-    <div style="height:44px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
-    <img src="uploads/7-3.png" alt="박상경 유사도 분석 상세" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
+ <section id="register" style="padding:78px 72px;border-top:1px solid var(--line);">
+  <div style="max-width:1120px;">
+   <div style="font:700 14px/1 var(--font-base);letter-spacing:.1em;color:var(--cyan);">운영자 콘솔 · 01</div>
+   <h2 style="font:800 38px/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:14px 0 0;">보이스 등록</h2>
+   <p style="font:500 18px/1.7 var(--font-base);color:var(--muted);margin:16px 0 0;max-width:820px;">전달받은 음성 데이터를 <b style="color:var(--ink);">권리자명</b>과 <b style="color:var(--ink);">보이스(캐릭터명)</b> 기준으로 구분해 등록합니다. 한 명의 권리자가 여러 보이스를 함께 관리할 수 있습니다.</p>
+   <div style="display:flex;gap:14px;margin-top:24px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#EAF2FE,#F0ECFE);border:1px solid var(--line);border-radius:14px;padding:18px 24px;"><span style="font:800 38px/1 var(--font-display);color:var(--blue);">20분</span><span style="font:600 15px/1.4 var(--font-base);color:var(--ink);">보이스 1개당<br>최소 음성 분량</span></div>
+    <div style="display:flex;align-items:center;gap:10px;background:var(--mist);border:1px solid var(--line);border-radius:14px;padding:18px 24px;font:600 15px/1.4 var(--font-base);color:var(--muted);">지원 포맷 · WAV / MP3 / M4A</div>
    </div>
-   <div style="flex:none;width:600px;display:flex;flex-direction:column;gap:22px;">
-    <div style="display:flex;gap:16px;">
-     <div style="flex:1;background:#FEECEC;border:1px solid #FED5D5;border-radius:16px;padding:22px 24px;"><div style="font:600 22px/1 var(--font-base);color:#B20C0C;">최대 유사도</div><div style="font:800 56px/1 var(--font-display);color:#E52222;margin-top:10px;">90.87%</div></div>
-     <div style="flex:1;background:var(--mist);border:1px solid var(--line);border-radius:16px;padding:22px 24px;"><div style="font:600 22px/1 var(--font-base);color:var(--muted);">최종 판정</div><div style="font:800 34px/1.1 var(--font-display);color:var(--ink);margin-top:12px;">고위험 의심</div></div>
+   <div style="margin-top:32px;display:flex;flex-direction:column;gap:26px;">
+    <div>
+     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;"><span style="font:700 13px/1 var(--font-base);color:#fff;background:var(--blue);border-radius:7px;padding:6px 11px;">STEP 1</span><span style="font:700 16px/1 var(--font-base);color:var(--ink);">기본 정보 입력 — 권리자와 보이스 구분</span></div>
+     <div class="shot" data-full="uploads/1.png" style="border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px -24px rgba(8,20,45,.4);background:#0a0c12;">
+      <div style="height:40px;display:flex;align-items:center;gap:7px;padding:0 15px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
+      <img src="uploads/1.png" alt="보이스 등록 기본 정보" style="display:block;width:100%;">
+      <div class="zoomhint" style="position:absolute;top:52px;right:14px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 11px;font:600 13px/1 var(--font-base);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+     </div>
     </div>
-    <p style="font:500 var(--t-body)/1.55 var(--font-base);color:var(--ink);margin:0;">키워드로는 AI 합성이 발견되지 않아, 유사도 분석을 검증하기 위해 박상경 성우님이 <b>실제로 실연한 영상</b>을 분석했습니다.</p>
-    <p style="font:500 var(--t-body)/1.55 var(--font-base);color:var(--ink);margin:0;">고위험 수치를 확인하며 <b>유사도 분석이 실연 음성을 정확히 식별</b>함을 검증했습니다.</p>
-    <div style="background:#FEF4E6;border:1px solid #FEE6C6;border-radius:16px;padding:22px 24px;">
-     <p style="font:500 var(--t-small)/1.55 var(--font-base);color:#9C5800;margin:0;"><b>정확도 참고</b> — 캐릭터별로 샘플을 나누다 보니 분량이 3~4분에 그쳐 정확도가 기대보다 다소 낮았습니다. 샘플을 더 확보하면 정확도는 더 높아집니다.</p>
-    </div>
-   </div>
-  </div>
- </div>
-</section>
-
-<section data-label="04 자동 탐지" data-screen-label="섹션 04 자동 탐지" data-speaker-notes="섹션 4. 키워드로 잡히지 않는 영역을 위한 자동 탐지입니다.">
- <div style="position:absolute;inset:0;background:radial-gradient(900px 600px at 82% 12%, #0E2A4D 0%, rgba(14,42,77,0) 60%), var(--dark);padding:var(--pad-y) var(--pad-x);display:flex;flex-direction:column;justify-content:center;overflow:hidden;">
-  <div style="font:800 var(--t-label)/1 var(--font-base);letter-spacing:.2em;color:var(--cyan);margin-bottom:8px;">운영자 워크플로 · 지음 내부 운영</div>
-  <div style="display:flex;align-items:flex-start;gap:40px;">
-   <span style="font:800 var(--t-num)/.82 var(--font-display);color:transparent;-webkit-text-stroke:2px rgba(0,189,222,.55);letter-spacing:-.04em;">04</span>
-   <div style="padding-top:36px;">
-    <h2 style="font:800 84px/1.06 var(--font-display);letter-spacing:-.02em;color:#fff;margin:0;">자동 탐지</h2>
-    <p style="font:500 var(--t-lead)/1.5 var(--font-base);color:rgba(255,255,255,.72);margin:24px 0 0;max-width:820px;">키워드로 잡히지 않는 무단 사용을, 매일 수집하는 무작위 영상에서 찾아냅니다.</p>
-   </div>
-  </div>
- </div>
-</section>
-
-<section data-label="자동 탐지 · 개념" data-screen-label="자동 탐지 개념" data-speaker-notes="매일 영상 플랫폼에서 일정량의 무작위 영상(예능 쇼츠, 영화 소개 쇼츠 등)을 수집하고, 그 목소리에 우리 측 권리자의 목소리가 포함됐는지 분석합니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--blue);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--blue);"></span>04 · 자동 탐지</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">매일 무작위 영상을 수집·분석</h2>
-  <div style="flex:1;display:flex;gap:56px;margin-top:38px;min-height:0;align-items:center;">
-   <div style="flex:none;width:620px;display:flex;flex-direction:column;gap:22px;">
-    <p style="font:500 var(--t-body)/1.55 var(--font-base);color:var(--ink);margin:0;">키워드로 검색되지 않는 영역을 잡기 위해, 매일 영상 플랫폼에서 일정량의 <b>무작위 영상</b>을 수집합니다. (예능 쇼츠, 영화 소개 쇼츠 등)</p>
-    <p style="font:500 var(--t-body)/1.55 var(--font-base);color:var(--ink);margin:0;">수집한 영상의 목소리에 <b>우리 측 권리자의 목소리</b>가 포함됐는지 분석합니다.</p>
-    <div style="display:flex;gap:18px;margin-top:4px;">
-     <div style="flex:1;background:var(--mist);border:1px solid var(--line);border-radius:18px;padding:24px 26px;"><div style="font:600 var(--t-small)/1 var(--font-base);color:var(--muted);">기간 내 분석 영상</div><div style="font:800 52px/1 var(--font-display);color:var(--blue);margin-top:10px;">2,726</div></div>
-     <div style="flex:1;background:var(--mist);border:1px solid var(--line);border-radius:18px;padding:24px 26px;"><div style="font:600 var(--t-small)/1 var(--font-base);color:var(--muted);">누적 실행</div><div style="font:800 52px/1 var(--font-display);color:var(--cyan);margin-top:10px;">9회</div></div>
-    </div>
-   </div>
-   <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 26px 56px -24px rgba(8,20,45,.5);background:#0a0c12;align-self:stretch;display:flex;flex-direction:column;min-height:0;">
-    <div style="height:46px;flex:none;display:flex;align-items:center;gap:8px;padding:0 18px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span></div>
-    <img src="uploads/9.png" alt="자동 탐지 실행 요약" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
-   </div>
-  </div>
- </div>
-</section>
-
-<section data-label="자동 탐지 검증" data-screen-label="자동 탐지 검증 임호기" data-speaker-notes="유사도 분석에서 임호기 성우님 캐릭터F와 비슷한 목소리의 영상을 발견(최고 82.6%). 직접 들어보니 비슷하지만 임호기 성우님 목소리는 아닌 것으로 판단. 성우 간 유사 목소리 변별력 향상이 필요하며 샘플 확대로 개선 예정입니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--blue);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--blue);"></span>04 · 자동 탐지 검증</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">검증 사례 — 유사 목소리 변별</h2>
-  <div style="flex:1;display:flex;gap:48px;margin-top:36px;min-height:0;align-items:stretch;">
-   <div style="flex:1.25;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 26px 56px -24px rgba(8,20,45,.5);background:#0a0c12;display:flex;flex-direction:column;min-height:0;">
-    <div style="height:44px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
-    <img src="uploads/11.png" alt="자동 탐지 유사도 분석" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
-   </div>
-   <div style="flex:none;width:600px;display:flex;flex-direction:column;gap:22px;">
-    <div style="background:var(--mist);border:1px solid var(--line);border-radius:16px;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;"><div><div style="font:600 22px/1 var(--font-base);color:var(--muted);">최고 매칭 보이스</div><div style="font:700 30px/1.2 var(--font-base);color:var(--ink);margin-top:8px;">임호기 · 캐릭터F</div></div><div style="font:800 52px/1 var(--font-display);color:var(--cyan);">82.6%</div></div>
-    <p style="font:500 var(--t-body)/1.55 var(--font-base);color:var(--ink);margin:0;">유사도 분석에서 임호기 성우님의 <b>캐릭터F와 비슷한 목소리</b>의 영상을 발견했습니다.</p>
-    <p style="font:500 var(--t-body)/1.55 var(--font-base);color:var(--ink);margin:0;">직접 들어보니 비슷하지만, <b>임호기 성우님의 목소리는 아닌 것</b>으로 판단했습니다.</p>
-    <a href="https://www.youtube.com/watch?v=N-46lQGWTYM" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;align-self:flex-start;gap:10px;font:700 var(--t-small)/1 var(--font-base);color:#fff;background:var(--blue);border-radius:14px;padding:16px 20px;text-decoration:none;">실제 영상 들어보기</a>
-    <div style="background:#EAF2FE;border:1px solid #C9DEFE;border-radius:16px;padding:22px 24px;">
-     <p style="font:500 var(--t-small)/1.55 var(--font-base);color:var(--blue-strong);margin:0;"><b>개선 과제</b> — 성우 간 유사한 목소리가 있을 때 유사도가 높게 나오는 구간의 변별력 향상이 필요합니다. 샘플 양을 늘리면 해결될 것으로 봅니다.</p>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;">
+     <div style="flex:1;min-width:330px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;"><span style="font:700 13px/1 var(--font-base);color:#fff;background:var(--cyan);border-radius:7px;padding:6px 11px;">STEP 2</span><span style="font:700 16px/1 var(--font-base);color:var(--ink);">샘플 업로드 · 자동 검증</span></div>
+      <div class="shot" data-full="uploads/2.png" style="border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px -24px rgba(8,20,45,.4);background:#0a0c12;">
+       <div style="height:38px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:9px;height:9px;border-radius:50%;background:#ff5f57;"></span><span style="width:9px;height:9px;border-radius:50%;background:#febc2e;"></span><span style="width:9px;height:9px;border-radius:50%;background:#28c840;"></span></div>
+       <img src="uploads/2.png" alt="샘플 업로드" style="display:block;width:100%;">
+       <div class="zoomhint" style="position:absolute;top:48px;right:12px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:600 12px/1 var(--font-base);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+      </div>
+     </div>
+     <div style="flex:1;min-width:330px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;"><span style="font:700 13px/1 var(--font-base);color:#fff;background:#00BF40;border-radius:7px;padding:6px 11px;">STEP 3</span><span style="font:700 16px/1 var(--font-base);color:var(--ink);">검토 후 등록 완료</span></div>
+      <div class="shot" data-full="uploads/3.png" style="border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px -24px rgba(8,20,45,.4);background:#0a0c12;">
+       <div style="height:38px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:9px;height:9px;border-radius:50%;background:#ff5f57;"></span><span style="width:9px;height:9px;border-radius:50%;background:#febc2e;"></span><span style="width:9px;height:9px;border-radius:50%;background:#28c840;"></span></div>
+       <img src="uploads/3.png" alt="등록 완료" style="display:block;width:100%;">
+       <div class="zoomhint" style="position:absolute;top:48px;right:12px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:600 12px/1 var(--font-base);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+      </div>
+     </div>
     </div>
    </div>
   </div>
- </div>
-</section>
+ </section>
 
-<section data-label="05 클라이언트" data-screen-label="섹션 05 클라이언트 페이지" data-speaker-notes="섹션 5. 권리자에게 제공하는 화이트 테마 클라이언트 페이지입니다.">
- <div style="position:absolute;inset:0;background:linear-gradient(135deg,#EAF2FE 0%,#F0ECFE 100%);padding:var(--pad-y) var(--pad-x);display:flex;flex-direction:column;justify-content:center;overflow:hidden;">
-  <div style="position:absolute;bottom:-120px;right:-60px;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle at 40% 40%, rgba(101,65,242,.16), transparent 70%);"></div>
-  <div style="font:800 var(--t-label)/1 var(--font-base);letter-spacing:.2em;color:var(--blue);margin-bottom:8px;">고객 제공 · 권리자 전용 화면</div>
-  <div style="display:flex;align-items:flex-start;gap:40px;">
-   <span style="font:800 var(--t-num)/.82 var(--font-display);color:transparent;-webkit-text-stroke:2px rgba(0,102,255,.45);letter-spacing:-.04em;">05</span>
-   <div style="padding-top:36px;">
-    <h2 style="font:800 84px/1.06 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:0;">클라이언트 페이지</h2>
-    <p style="font:500 var(--t-lead)/1.5 var(--font-base);color:var(--muted);margin:24px 0 0;max-width:820px;">결과만 간편하게 확인하는, 권리자 전용 화이트 테마 페이지입니다.</p>
+ <section id="manage" style="padding:78px 72px;background:var(--mist);border-top:1px solid var(--line);">
+  <div style="max-width:1120px;">
+   <div style="font:700 14px/1 var(--font-base);letter-spacing:.1em;color:var(--cyan);">운영자 콘솔 · 02</div>
+   <h2 style="font:800 38px/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:14px 0 0;">내 보이스 관리</h2>
+   <p style="font:500 18px/1.7 var(--font-base);color:var(--muted);margin:16px 0 0;max-width:820px;">등록한 보이스 목록과 마켓 노출 설정(카테고리·톤·라이선스·금지어·금액 등)을 관리합니다. 보이스별로 <b style="color:var(--ink);">샘플을 추가</b>하거나 <b style="color:var(--ink);">상세 정보</b>를 확인할 수 있습니다.</p>
+   <div style="display:flex;gap:14px;margin-top:22px;">
+    <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 26px;"><div style="font:600 13px/1 var(--font-base);color:var(--muted);">총 보이스 수</div><div style="font:800 36px/1 var(--font-display);color:var(--blue);margin-top:8px;">10</div></div>
+    <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 26px;"><div style="font:600 13px/1 var(--font-base);color:var(--muted);">총 샘플 수</div><div style="font:800 36px/1 var(--font-display);color:var(--cyan);margin-top:8px;">162</div></div>
+   </div>
+   <div class="shot" data-full="uploads/4.png" style="margin-top:28px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 50px -26px rgba(8,20,45,.45);background:#0a0c12;">
+    <div style="height:40px;display:flex;align-items:center;gap:7px;padding:0 15px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
+    <img src="uploads/4.png" alt="내 보이스 관리" style="display:block;width:100%;">
+    <div class="zoomhint" style="position:absolute;top:52px;right:14px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 11px;font:600 13px/1 var(--font-base);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
    </div>
   </div>
- </div>
-</section>
+ </section>
 
-<section data-label="로그인" data-screen-label="클라이언트 로그인" data-speaker-notes="조작이 어려운 운영자 콘솔과 달리 결과만 확인하는 페이지입니다. 사전 제출한 이메일로 계정 등록 메일을 발송하고, 메일에서 비밀번호를 설정해 로그인합니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--violet);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--violet);"></span>05 · 클라이언트 페이지</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">로그인</h2>
-  <div style="flex:1;display:flex;gap:56px;margin-top:38px;min-height:0;align-items:center;">
-   <div style="flex:none;width:600px;display:flex;flex-direction:column;gap:26px;">
-    <p style="font:500 var(--t-body)/1.6 var(--font-base);color:var(--ink);margin:0;">조작이 복잡한 운영자 콘솔과 달리, 권리자는 <b>결과만 확인</b>하는 별도 페이지를 사용합니다.</p>
-    <div style="display:flex;flex-direction:column;gap:14px;">
-     <div style="display:flex;align-items:center;gap:16px;background:var(--mist);border:1px solid var(--line);border-radius:14px;padding:18px 22px;"><span style="flex:none;width:34px;height:34px;border-radius:9px;background:var(--violet);color:#fff;font:700 20px/34px var(--font-base);text-align:center;">1</span><span style="font:500 var(--t-body)/1.3 var(--font-base);color:var(--ink);">사전 제출한 이메일로 계정 등록 메일 발송</span></div>
-     <div style="display:flex;align-items:center;gap:16px;background:var(--mist);border:1px solid var(--line);border-radius:14px;padding:18px 22px;"><span style="flex:none;width:34px;height:34px;border-radius:9px;background:var(--violet);color:#fff;font:700 20px/34px var(--font-base);text-align:center;">2</span><span style="font:500 var(--t-body)/1.3 var(--font-base);color:var(--ink);">메일에서 비밀번호 설정</span></div>
-     <div style="display:flex;align-items:center;gap:16px;background:var(--mist);border:1px solid var(--line);border-radius:14px;padding:18px 22px;"><span style="flex:none;width:34px;height:34px;border-radius:9px;background:var(--violet);color:#fff;font:700 20px/34px var(--font-base);text-align:center;">3</span><span style="font:500 var(--t-body)/1.3 var(--font-base);color:var(--ink);">로그인 완료</span></div>
+ <section id="detect" style="padding:78px 72px;border-top:1px solid var(--line);">
+  <div style="max-width:1120px;">
+   <div style="font:700 14px/1 var(--font-base);letter-spacing:.1em;color:var(--cyan);">운영자 콘솔 · 03</div>
+   <h2 style="font:800 38px/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:14px 0 0;">무단 사용 탐지 — 키워드 기반</h2>
+   <p style="font:500 18px/1.7 var(--font-base);color:var(--muted);margin:16px 0 0;max-width:840px;">권리자명·캐릭터명·추가 키워드를 <b style="color:var(--ink);">AI가 조합</b>해 검색어를 생성하고, <b style="color:var(--ink);">YouTube · TikTok · Instagram</b> 등 영상 유통 플랫폼에서 영상을 수집·분석합니다.</p>
+   <div style="display:flex;flex-wrap:wrap;gap:9px;margin-top:20px;">
+    <span style="font:600 14px/1 var(--font-base);color:var(--blue-strong);background:#EAF2FE;border:1px solid #C9DEFE;border-radius:999px;padding:9px 15px;">캐릭터 AI 커버</span>
+    <span style="font:600 14px/1 var(--font-base);color:var(--blue-strong);background:#EAF2FE;border:1px solid #C9DEFE;border-radius:999px;padding:9px 15px;">보이스 클론</span>
+    <span style="font:600 14px/1 var(--font-base);color:var(--blue-strong);background:#EAF2FE;border:1px solid #C9DEFE;border-radius:999px;padding:9px 15px;">목소리 합성</span>
+    <span style="font:600 14px/1 var(--font-base);color:var(--blue-strong);background:#EAF2FE;border:1px solid #C9DEFE;border-radius:999px;padding:9px 15px;">AI 더빙</span>
+    <span style="font:600 14px/1 var(--font-base);color:var(--muted);background:var(--mist);border:1px solid var(--line);border-radius:999px;padding:9px 15px;">약 20개 조합 자동 생성</span>
+   </div>
+   <div class="shot" data-full="uploads/5.png" style="margin-top:28px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 50px -26px rgba(8,20,45,.45);background:#0a0c12;">
+    <div style="height:40px;display:flex;align-items:center;gap:7px;padding:0 15px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
+    <img src="uploads/5.png" alt="무단 사용 탐지 설정" style="display:block;width:100%;">
+    <div class="zoomhint" style="position:absolute;top:52px;right:14px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 11px;font:600 13px/1 var(--font-base);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+   </div>
+   <div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:24px;">
+    <div style="flex:1;min-width:330px;">
+     <div style="font:700 15px/1 var(--font-base);color:var(--ink);margin-bottom:12px;">진행 — 실시간 파이프라인</div>
+     <div class="shot" data-full="uploads/6.png" style="border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px -24px rgba(8,20,45,.4);background:#0a0c12;">
+      <div style="height:38px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:9px;height:9px;border-radius:50%;background:#ff5f57;"></span><span style="width:9px;height:9px;border-radius:50%;background:#febc2e;"></span><span style="width:9px;height:9px;border-radius:50%;background:#28c840;"></span></div>
+      <img src="uploads/6.png" alt="탐지 진행 현황" style="display:block;width:100%;">
+      <div class="zoomhint" style="position:absolute;top:48px;right:12px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:600 12px/1 var(--font-base);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+     </div>
+    </div>
+    <div style="flex:1;min-width:330px;">
+     <div style="font:700 15px/1 var(--font-base);color:var(--ink);margin-bottom:12px;">결과 — AI 유사도 분석</div>
+     <div class="shot" data-full="uploads/7.png" style="border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px -24px rgba(8,20,45,.4);background:#0a0c12;">
+      <div style="height:38px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:9px;height:9px;border-radius:50%;background:#ff5f57;"></span><span style="width:9px;height:9px;border-radius:50%;background:#febc2e;"></span><span style="width:9px;height:9px;border-radius:50%;background:#28c840;"></span></div>
+      <img src="uploads/7.png" alt="AI 유사도 분석 결과" style="display:block;width:100%;">
+      <div class="zoomhint" style="position:absolute;top:48px;right:12px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:600 12px/1 var(--font-base);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+     </div>
     </div>
    </div>
-   <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 26px 56px -24px rgba(8,20,45,.28);background:#fff;align-self:stretch;display:flex;flex-direction:column;min-height:0;">
-    <div style="height:46px;flex:none;display:flex;align-items:center;gap:8px;padding:0 18px;background:var(--mist);border-bottom:1px solid var(--line);"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span></div>
-    <img src="uploads/12.png" alt="클라이언트 로그인" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
-   </div>
-  </div>
- </div>
-</section>
+   <p style="font:500 15px/1.6 var(--font-base);color:var(--muted);margin:16px 0 0;">임호기 보이스는 875건 중 <b style="color:var(--ink);">109건</b>이 의심 후보로 수집됐으나, 키워드 검색만으로는 AI 합성 콘텐츠가 발견되지 않아 모두 '위험 낮음'으로 분류됐습니다.</p>
 
-<section data-label="현황·탐지 내역" data-screen-label="클라이언트 대시보드 탐지내역" data-speaker-notes="권리자는 본인 목소리에 대한 분석 결과만 봅니다. 대시보드에서 보호 현황과 채널별 분포를, 탐지 내역에서 의심 항목과 유사도를 확인합니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--violet);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--violet);"></span>05 · 클라이언트 페이지</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">보호 현황과 탐지 내역</h2>
-  <div style="flex:1;display:flex;gap:34px;margin-top:36px;min-height:0;">
-   <div style="flex:1;display:flex;flex-direction:column;">
-    <div style="font:700 var(--t-small)/1 var(--font-base);color:var(--ink);margin-bottom:14px;">대시보드 — 보호 현황 요약</div>
-    <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 22px 50px -24px rgba(8,20,45,.28);background:#fff;display:flex;flex-direction:column;min-height:0;">
-     <div style="height:42px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;background:var(--mist);border-bottom:1px solid var(--line);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
-     <img src="uploads/13.png" alt="대시보드" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
-    </div>
-   </div>
-   <div style="flex:1;display:flex;flex-direction:column;">
-    <div style="font:700 var(--t-small)/1 var(--font-base);color:var(--ink);margin-bottom:14px;">탐지 내역 — 의심 항목·유사도</div>
-    <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 22px 50px -24px rgba(8,20,45,.28);background:#fff;display:flex;flex-direction:column;min-height:0;">
-     <div style="height:42px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;background:var(--mist);border-bottom:1px solid var(--line);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
-     <img src="uploads/14.png" alt="탐지 내역" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
+   <div style="margin-top:40px;background:linear-gradient(135deg,#FFF8F8,#FFFCF7);border:1px solid #FED5D5;border-radius:20px;padding:34px 36px;">
+    <div style="display:inline-flex;align-items:center;gap:8px;font:700 13px/1 var(--font-base);color:#B20C0C;background:#FEECEC;border-radius:999px;padding:7px 13px;">검증 사례 · 박상경 성우님</div>
+    <h3 style="font:700 25px/1.35 var(--font-base);color:var(--ink);margin:16px 0 0;">유사도 분석은 실연 음성을 정확히 식별합니다</h3>
+    <div style="display:flex;gap:26px;flex-wrap:wrap;margin-top:22px;align-items:flex-start;">
+     <div class="shot" data-full="uploads/7-3.png" style="flex:1.3;min-width:360px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px -24px rgba(8,20,45,.4);background:#0a0c12;">
+      <div style="height:38px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:9px;height:9px;border-radius:50%;background:#ff5f57;"></span><span style="width:9px;height:9px;border-radius:50%;background:#febc2e;"></span><span style="width:9px;height:9px;border-radius:50%;background:#28c840;"></span></div>
+      <img src="uploads/7-3.png" alt="박상경 유사도 분석 상세" style="display:block;width:100%;">
+      <div class="zoomhint" style="position:absolute;top:48px;right:12px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:600 12px/1 var(--font-base);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+     </div>
+     <div style="flex:1;min-width:280px;">
+      <div style="display:flex;gap:12px;margin-bottom:16px;">
+       <div style="flex:1;background:#FEECEC;border:1px solid #FED5D5;border-radius:14px;padding:18px 20px;"><div style="font:600 13px/1 var(--font-base);color:#B20C0C;">최대 유사도</div><div style="font:800 40px/1 var(--font-display);color:#E52222;margin-top:8px;">90.87%</div></div>
+       <div style="flex:1;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;"><div style="font:600 13px/1 var(--font-base);color:var(--muted);">최종 판정</div><div style="font:800 23px/1.1 var(--font-display);color:var(--ink);margin-top:12px;">고위험 의심</div></div>
+      </div>
+      <p style="font:500 16px/1.65 var(--font-base);color:var(--ink);margin:0 0 12px;">키워드로는 AI 합성이 발견되지 않아, 유사도 분석을 검증하기 위해 박상경 성우님이 <b>실제로 실연한 영상</b>을 분석했습니다. 고위험 수치를 확인하며 분석 정확도를 검증했습니다.</p>
+      <div style="background:#FEF4E6;border:1px solid #FEE6C6;border-radius:14px;padding:16px 18px;"><p style="font:500 14.5px/1.6 var(--font-base);color:#9C5800;margin:0;"><b>정확도 참고</b> — 캐릭터별로 샘플을 나누다 보니 분량이 3~4분에 그쳐 정확도가 기대보다 다소 낮았습니다. 샘플을 더 확보하면 정확도는 더 높아집니다.</p></div>
+     </div>
     </div>
    </div>
   </div>
-  <p style="font:500 var(--t-small)/1.5 var(--font-base);color:var(--muted);margin:20px 0 0;">각 권리자는 전달받은 이메일을 통해 <b style="color:var(--ink);">본인 목소리에 대한 분석 결과만</b> 확인합니다.</p>
- </div>
-</section>
+ </section>
 
-<section data-label="증거 & 리포트" data-screen-label="증거 리포트" data-speaker-notes="탐지된 위험의 증거와 분석 리포트를 확인·다운로드합니다. 이후 AI가 영상의 내용과 상황을 최종 정리해 한 장의 증거 리포트로 제공할 예정입니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--violet);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--violet);"></span>05 · 클라이언트 페이지</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">증거 &amp; 리포트</h2>
-  <div style="flex:1;display:flex;gap:56px;margin-top:38px;min-height:0;align-items:center;">
-   <div style="flex:none;width:600px;display:flex;flex-direction:column;gap:24px;">
-    <p style="font:500 var(--t-body)/1.6 var(--font-base);color:var(--ink);margin:0;">탐지된 위험의 <b>증거와 분석 리포트</b>를 확인하고 다운로드할 수 있습니다.</p>
-    <div style="background:linear-gradient(135deg,#EAF2FE,#F0ECFE);border:1px solid var(--line);border-radius:18px;padding:30px 32px;">
-     <div style="display:inline-flex;align-items:center;gap:8px;font:700 20px/1 var(--font-base);color:var(--violet);background:#fff;border-radius:999px;padding:8px 14px;margin-bottom:16px;">예정</div>
-     <p style="font:500 var(--t-body)/1.55 var(--font-base);color:var(--ink);margin:0;"><b>AI가 영상의 내용과 상황을 최종 정리</b>해, 한 장의 증거 리포트로 보여줄 예정입니다.</p>
+ <section id="auto" style="padding:78px 72px;background:var(--mist);border-top:1px solid var(--line);">
+  <div style="max-width:1120px;">
+   <div style="font:700 14px/1 var(--font-base);letter-spacing:.1em;color:var(--cyan);">운영자 콘솔 · 04</div>
+   <h2 style="font:800 38px/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:14px 0 0;">자동 탐지 — 매일 무작위 영상 수집</h2>
+   <p style="font:500 18px/1.7 var(--font-base);color:var(--muted);margin:16px 0 0;max-width:840px;">키워드로 검색되지 않는 영역을 잡기 위해, 매일 영상 플랫폼에서 일정량의 <b style="color:var(--ink);">무작위 영상</b>(예능 쇼츠, 영화 소개 쇼츠 등)을 수집하고, 그 목소리에 <b style="color:var(--ink);">우리 측 권리자의 목소리</b>가 포함됐는지 분석합니다.</p>
+   <div style="display:flex;gap:14px;margin-top:22px;">
+    <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 26px;"><div style="font:600 13px/1 var(--font-base);color:var(--muted);">기간 내 분석 영상</div><div style="font:800 36px/1 var(--font-display);color:var(--blue);margin-top:8px;">2,726</div></div>
+    <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 26px;"><div style="font:600 13px/1 var(--font-base);color:var(--muted);">누적 실행</div><div style="font:800 36px/1 var(--font-display);color:var(--cyan);margin-top:8px;">9회</div></div>
+   </div>
+   <div class="shot" data-full="uploads/9.png" style="margin-top:28px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 50px -26px rgba(8,20,45,.45);background:#0a0c12;">
+    <div style="height:40px;display:flex;align-items:center;gap:7px;padding:0 15px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
+    <img src="uploads/9.png" alt="자동 탐지 실행 요약" style="display:block;width:100%;">
+    <div class="zoomhint" style="position:absolute;top:52px;right:14px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 11px;font:600 13px/1 var(--font-base);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+   </div>
+
+   <div style="margin-top:40px;background:#fff;border:1px solid #C9DEFE;border-radius:20px;padding:34px 36px;">
+    <div style="display:inline-flex;align-items:center;gap:8px;font:700 13px/1 var(--font-base);color:var(--blue-strong);background:#EAF2FE;border-radius:999px;padding:7px 13px;">검증 사례 · 임호기 성우님</div>
+    <h3 style="font:700 25px/1.35 var(--font-base);color:var(--ink);margin:16px 0 0;">유사 목소리의 변별력을 높여 갑니다</h3>
+    <div style="display:flex;gap:26px;flex-wrap:wrap;margin-top:22px;align-items:flex-start;">
+     <div class="shot" data-full="uploads/11.png" style="flex:1.3;min-width:360px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px -24px rgba(8,20,45,.4);background:#0a0c12;">
+      <div style="height:38px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#10131b;border-bottom:1px solid rgba(255,255,255,.07);"><span style="width:9px;height:9px;border-radius:50%;background:#ff5f57;"></span><span style="width:9px;height:9px;border-radius:50%;background:#febc2e;"></span><span style="width:9px;height:9px;border-radius:50%;background:#28c840;"></span></div>
+      <img src="uploads/11.png" alt="자동 탐지 유사도 분석" style="display:block;width:100%;">
+      <div class="zoomhint" style="position:absolute;top:48px;right:12px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:600 12px/1 var(--font-base);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+     </div>
+     <div style="flex:1;min-width:280px;">
+      <div style="background:var(--mist);border:1px solid var(--line);border-radius:14px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><div><div style="font:600 13px/1 var(--font-base);color:var(--muted);">최고 매칭 보이스</div><div style="font:700 20px/1.2 var(--font-base);color:var(--ink);margin-top:6px;">임호기 · 캐릭터F</div></div><div style="font:800 36px/1 var(--font-display);color:var(--cyan);">82.6%</div></div>
+      <p style="font:500 16px/1.65 var(--font-base);color:var(--ink);margin:0 0 12px;">유사도 분석에서 임호기 성우님의 캐릭터F와 비슷한 목소리의 영상을 발견했습니다. 직접 들어보니 비슷하지만, <b>임호기 성우님의 목소리는 아닌 것</b>으로 판단했습니다.</p>
+      <a href="https://www.youtube.com/watch?v=N-46lQGWTYM" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;font:700 14px/1 var(--font-base);color:#fff;background:var(--blue);border-radius:10px;padding:11px 14px;margin:0 0 14px;text-decoration:none;">실제 영상 들어보기</a>
+      <div style="background:#EAF2FE;border:1px solid #C9DEFE;border-radius:14px;padding:16px 18px;"><p style="font:500 14.5px/1.6 var(--font-base);color:var(--blue-strong);margin:0;"><b>개선 과제</b> — 성우 간 유사한 목소리가 있을 때 유사도가 높게 나오는 구간의 변별력 향상이 필요합니다. 샘플 양을 늘리면 해결될 것으로 봅니다.</p></div>
+     </div>
     </div>
    </div>
-   <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 26px 56px -24px rgba(8,20,45,.28);background:#fff;align-self:stretch;display:flex;flex-direction:column;min-height:0;">
-    <div style="height:46px;flex:none;display:flex;align-items:center;gap:8px;padding:0 18px;background:var(--mist);border-bottom:1px solid var(--line);"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span></div>
-    <img src="uploads/15.png" alt="증거 및 리포트" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
+  </div>
+ </section>
+
+ <section id="login" style="padding:78px 72px;border-top:1px solid var(--line);">
+  <div style="max-width:1120px;">
+   <div style="font:700 14px/1 var(--font-base);letter-spacing:.1em;color:var(--violet);">클라이언트 페이지 · 05</div>
+   <h2 style="font:800 38px/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:14px 0 0;">로그인</h2>
+   <p style="font:500 18px/1.7 var(--font-base);color:var(--muted);margin:16px 0 0;max-width:820px;">조작이 복잡한 운영자 콘솔과 달리, 권리자는 <b style="color:var(--ink);">결과만 확인</b>하는 별도 페이지를 사용합니다. 사전 제출한 이메일로 계정 등록 메일을 발송하고, 메일에서 비밀번호를 설정해 로그인합니다.</p>
+   <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;">
+    <div style="flex:1;min-width:220px;display:flex;align-items:center;gap:14px;background:var(--mist);border:1px solid var(--line);border-radius:14px;padding:16px 20px;"><span style="flex:none;width:32px;height:32px;border-radius:9px;background:var(--violet);color:#fff;font:700 17px/32px var(--font-base);text-align:center;">1</span><span style="font:500 15.5px/1.4 var(--font-base);color:var(--ink);">계정 등록 메일 발송</span></div>
+    <div style="flex:1;min-width:220px;display:flex;align-items:center;gap:14px;background:var(--mist);border:1px solid var(--line);border-radius:14px;padding:16px 20px;"><span style="flex:none;width:32px;height:32px;border-radius:9px;background:var(--violet);color:#fff;font:700 17px/32px var(--font-base);text-align:center;">2</span><span style="font:500 15.5px/1.4 var(--font-base);color:var(--ink);">메일에서 비밀번호 설정</span></div>
+    <div style="flex:1;min-width:220px;display:flex;align-items:center;gap:14px;background:var(--mist);border:1px solid var(--line);border-radius:14px;padding:16px 20px;"><span style="flex:none;width:32px;height:32px;border-radius:9px;background:var(--violet);color:#fff;font:700 17px/32px var(--font-base);text-align:center;">3</span><span style="font:500 15.5px/1.4 var(--font-base);color:var(--ink);">로그인 완료</span></div>
+   </div>
+   <div class="shot" data-full="uploads/12.png" style="margin-top:28px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 50px -26px rgba(8,20,45,.28);background:#fff;">
+    <div style="height:40px;display:flex;align-items:center;gap:7px;padding:0 15px;background:#fff;border-bottom:1px solid var(--line);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span><div style="margin-left:10px;height:24px;border-radius:7px;background:var(--mist);border:1px solid var(--line);display:flex;align-items:center;padding:0 12px;font:500 12.5px/1 var(--font-base);color:var(--faint);">app.voiceguard.kr</div></div>
+    <img src="uploads/12.png" alt="클라이언트 로그인" style="display:block;width:100%;">
+    <div class="zoomhint" style="position:absolute;top:52px;right:14px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 11px;font:600 13px/1 var(--font-base);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
    </div>
   </div>
- </div>
-</section>
+ </section>
 
-<section data-label="요청하기" data-screen-label="요청하기" data-speaker-notes="추가 보이스 등록, 모니터링이 필요한 콘텐츠·플랫폼 신고를 요청할 수 있고, 지음지식과 연계된 법무법인과 협업해 법적 조치와 상담까지 지원할 예정입니다.">
- <div style="position:absolute;inset:0;background:var(--paper);padding:64px var(--pad-x) 70px;display:flex;flex-direction:column;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;color:var(--violet);font:800 var(--t-label)/1 var(--font-base);letter-spacing:.14em;"><span style="width:32px;height:3px;background:var(--violet);"></span>05 · 클라이언트 페이지</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:20px 0 0;">요청하기 — 대응까지 연결</h2>
-  <div style="flex:1;display:flex;gap:56px;margin-top:38px;min-height:0;align-items:center;">
-   <div style="flex:1;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 26px 56px -24px rgba(8,20,45,.28);background:#fff;align-self:stretch;display:flex;flex-direction:column;min-height:0;">
-    <div style="height:46px;flex:none;display:flex;align-items:center;gap:8px;padding:0 18px;background:var(--mist);border-bottom:1px solid var(--line);"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span></div>
-    <img src="uploads/16.png" alt="요청하기" style="display:block;width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;">
-   </div>
-   <div style="flex:none;width:560px;display:flex;flex-direction:column;gap:18px;">
-    <div style="display:flex;gap:16px;align-items:flex-start;background:var(--mist);border:1px solid var(--line);border-radius:16px;padding:24px 26px;"><div style="flex:none;width:44px;height:44px;border-radius:12px;background:#EAF2FE;display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#0066FF" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="#0066FF" stroke-width="2" stroke-linecap="round"/></svg></div><div><div style="font:700 var(--t-small)/1.2 var(--font-base);color:var(--ink);">추가 탐지 · 보이스 등록 요청</div><p style="font:500 23px/1.5 var(--font-base);color:var(--muted);margin:8px 0 0;">모니터링이 필요한 콘텐츠·플랫폼 신고를 남길 수 있습니다.</p></div></div>
-    <div style="display:flex;gap:16px;align-items:flex-start;background:linear-gradient(135deg,#F0ECFE,#EAF2FE);border:1px solid var(--line);border-radius:16px;padding:24px 26px;"><div style="flex:none;width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M5 7h14M7 7l-3 7a4 4 0 0 0 6 0L7 7Zm10 0-3 7a4 4 0 0 0 6 0l-3-7Z" stroke="#6541F2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div style="font:700 var(--t-small)/1.2 var(--font-base);color:var(--ink);">법무 연계 대응 <span style="font:600 20px/1 var(--font-base);color:var(--violet);">예정</span></div><p style="font:500 23px/1.5 var(--font-base);color:var(--muted);margin:8px 0 0;">지음지식과 연계된 <b style="color:var(--ink);">법무법인</b>과 협업해 법적 조치와 상담까지 지원합니다.</p></div></div>
+ <section id="client" style="padding:78px 72px;background:var(--mist);border-top:1px solid var(--line);">
+  <div style="max-width:1120px;">
+   <div style="font:700 14px/1 var(--font-base);letter-spacing:.1em;color:var(--violet);">클라이언트 페이지 · 06</div>
+   <h2 style="font:800 38px/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:14px 0 0;">보호 현황과 탐지 내역</h2>
+   <p style="font:500 18px/1.7 var(--font-base);color:var(--muted);margin:16px 0 0;max-width:840px;">대시보드에서 보호 현황과 채널별 분포를, 탐지 내역에서 의심 항목과 유사도를 한눈에 봅니다. 각 권리자는 전달받은 이메일을 통해 <b style="color:var(--ink);">본인 목소리에 대한 분석 결과만</b> 확인합니다.</p>
+   <div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:28px;">
+    <div style="flex:1;min-width:340px;">
+     <div style="font:700 15px/1 var(--font-base);color:var(--ink);margin-bottom:12px;">대시보드 — 보호 현황 요약</div>
+     <div class="shot" data-full="uploads/13.png" style="border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px -24px rgba(8,20,45,.28);background:#fff;">
+      <div style="height:38px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#fff;border-bottom:1px solid var(--line);"><span style="width:9px;height:9px;border-radius:50%;background:#ff5f57;"></span><span style="width:9px;height:9px;border-radius:50%;background:#febc2e;"></span><span style="width:9px;height:9px;border-radius:50%;background:#28c840;"></span></div>
+      <img src="uploads/13.png" alt="대시보드" style="display:block;width:100%;">
+      <div class="zoomhint" style="position:absolute;top:48px;right:12px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:600 12px/1 var(--font-base);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+     </div>
+    </div>
+    <div style="flex:1;min-width:340px;">
+     <div style="font:700 15px/1 var(--font-base);color:var(--ink);margin-bottom:12px;">탐지 내역 — 의심 항목·유사도</div>
+     <div class="shot" data-full="uploads/14.png" style="border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px -24px rgba(8,20,45,.28);background:#fff;">
+      <div style="height:38px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#fff;border-bottom:1px solid var(--line);"><span style="width:9px;height:9px;border-radius:50%;background:#ff5f57;"></span><span style="width:9px;height:9px;border-radius:50%;background:#febc2e;"></span><span style="width:9px;height:9px;border-radius:50%;background:#28c840;"></span></div>
+      <img src="uploads/14.png" alt="탐지 내역" style="display:block;width:100%;">
+      <div class="zoomhint" style="position:absolute;top:48px;right:12px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:600 12px/1 var(--font-base);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+     </div>
+    </div>
    </div>
   </div>
- </div>
-</section>
+ </section>
 
-<section data-label="다음 단계" data-screen-label="다음 단계" data-speaker-notes="다음 단계: 샘플 추가 확보로 정확도 향상, 유사 목소리 변별력 강화, 증거 리포트 자동화, 법무 연계 정식 오픈.">
- <div style="position:absolute;inset:0;background:radial-gradient(1000px 700px at 12% 0%, #0E2A4D 0%, rgba(14,42,77,0) 55%), var(--dark);padding:var(--pad-y) var(--pad-x);display:flex;flex-direction:column;overflow:hidden;">
-  <div style="font:800 var(--t-label)/1 var(--font-base);letter-spacing:.18em;color:var(--cyan);">NEXT STEPS</div>
-  <h2 style="font:800 var(--t-title)/1.1 var(--font-display);letter-spacing:-.02em;color:#fff;margin:18px 0 0;">다음 단계</h2>
-  <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:42px;align-content:center;">
-   <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:34px 36px;"><div style="font:800 30px/1 var(--font-display);color:var(--cyan);">01</div><div style="font:700 32px/1.3 var(--font-base);color:#fff;margin-top:16px;">보이스 샘플 추가 확보</div><p style="font:500 var(--t-small)/1.5 var(--font-base);color:rgba(255,255,255,.66);margin:12px 0 0;">유사도 분석 정확도를 끌어올립니다.</p></div>
-   <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:34px 36px;"><div style="font:800 30px/1 var(--font-display);color:var(--cyan);">02</div><div style="font:700 32px/1.3 var(--font-base);color:#fff;margin-top:16px;">유사 목소리 변별력 강화</div><p style="font:500 var(--t-small)/1.5 var(--font-base);color:rgba(255,255,255,.66);margin:12px 0 0;">성우 간 비슷한 목소리를 더 정확히 구분합니다.</p></div>
-   <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:34px 36px;"><div style="font:800 30px/1 var(--font-display);color:var(--cyan);">03</div><div style="font:700 32px/1.3 var(--font-base);color:#fff;margin-top:16px;">증거 리포트 자동 생성</div><p style="font:500 var(--t-small)/1.5 var(--font-base);color:rgba(255,255,255,.66);margin:12px 0 0;">AI 요약 리포트를 고도화합니다.</p></div>
-   <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:34px 36px;"><div style="font:800 30px/1 var(--font-display);color:var(--cyan);">04</div><div style="font:700 32px/1.3 var(--font-base);color:#fff;margin-top:16px;">법무 연계 대응 오픈</div><p style="font:500 var(--t-small)/1.5 var(--font-base);color:rgba(255,255,255,.66);margin:12px 0 0;">법적 조치·상담 프로세스를 정식 제공합니다.</p></div>
+ <section id="report" style="padding:78px 72px;border-top:1px solid var(--line);">
+  <div style="max-width:1120px;">
+   <div style="font:700 14px/1 var(--font-base);letter-spacing:.1em;color:var(--violet);">클라이언트 페이지 · 07</div>
+   <h2 style="font:800 38px/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:14px 0 0;">증거 &amp; 리포트</h2>
+   <p style="font:500 18px/1.7 var(--font-base);color:var(--muted);margin:16px 0 0;max-width:820px;">탐지된 위험의 <b style="color:var(--ink);">증거와 분석 리포트</b>를 확인하고 다운로드할 수 있습니다.</p>
+   <div style="display:flex;align-items:center;gap:10px;margin-top:18px;background:linear-gradient(135deg,#EAF2FE,#F0ECFE);border:1px solid var(--line);border-radius:14px;padding:18px 22px;max-width:820px;"><span style="font:700 12px/1 var(--font-base);color:#fff;background:var(--violet);border-radius:999px;padding:6px 12px;">예정</span><span style="font:500 16px/1.55 var(--font-base);color:var(--ink);"><b>AI가 영상의 내용과 상황을 최종 정리</b>해, 한 장의 증거 리포트로 보여줄 예정입니다.</span></div>
+   <div class="shot" data-full="uploads/15.png" style="margin-top:28px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 50px -26px rgba(8,20,45,.28);background:#fff;">
+    <div style="height:40px;display:flex;align-items:center;gap:7px;padding:0 15px;background:#fff;border-bottom:1px solid var(--line);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span><div style="margin-left:10px;height:24px;border-radius:7px;background:var(--mist);border:1px solid var(--line);display:flex;align-items:center;padding:0 12px;font:500 12.5px/1 var(--font-base);color:var(--faint);">app.voiceguard.kr / report</div></div>
+    <img src="uploads/15.png" alt="증거 및 리포트" style="display:block;width:100%;">
+    <div class="zoomhint" style="position:absolute;top:52px;right:14px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 11px;font:600 13px/1 var(--font-base);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+   </div>
   </div>
-  <div style="margin-top:auto;padding-top:30px;font:700 34px/1.3 var(--font-display);color:#fff;">성우의 목소리, <span style="color:var(--cyan);">Voice Guard</span>가 지킵니다.</div>
- </div>
-</section>
+ </section>
 
-</x-import>
+ <section id="request" style="padding:78px 72px;background:var(--mist);border-top:1px solid var(--line);">
+  <div style="max-width:1120px;">
+   <div style="font:700 14px/1 var(--font-base);letter-spacing:.1em;color:var(--violet);">클라이언트 페이지 · 08</div>
+   <h2 style="font:800 38px/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:14px 0 0;">요청하기 — 대응까지 연결</h2>
+   <div style="display:flex;gap:26px;flex-wrap:wrap;margin-top:28px;align-items:flex-start;">
+    <div class="shot" data-full="uploads/16.png" style="flex:1.3;min-width:360px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 50px -26px rgba(8,20,45,.28);background:#fff;">
+     <div style="height:40px;display:flex;align-items:center;gap:7px;padding:0 15px;background:#fff;border-bottom:1px solid var(--line);"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840;"></span></div>
+     <img src="uploads/16.png" alt="요청하기" style="display:block;width:100%;">
+     <div class="zoomhint" style="position:absolute;top:52px;right:14px;display:flex;align-items:center;gap:6px;background:rgba(10,12,18,.82);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 11px;font:600 13px/1 var(--font-base);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>크게 보기</div>
+    </div>
+    <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:16px;">
+     <div style="display:flex;gap:15px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 24px;"><div style="flex:none;width:42px;height:42px;border-radius:12px;background:#EAF2FE;display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#0066FF" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="#0066FF" stroke-width="2" stroke-linecap="round"/></svg></div><div><div style="font:700 16px/1.3 var(--font-base);color:var(--ink);">추가 탐지 · 보이스 등록 요청</div><p style="font:500 15px/1.6 var(--font-base);color:var(--muted);margin:7px 0 0;">모니터링이 필요한 콘텐츠·플랫폼 신고를 남길 수 있습니다.</p></div></div>
+     <div style="display:flex;gap:15px;align-items:flex-start;background:linear-gradient(135deg,#F0ECFE,#EAF2FE);border:1px solid var(--line);border-radius:16px;padding:22px 24px;"><div style="flex:none;width:42px;height:42px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M5 7h14M7 7l-3 7a4 4 0 0 0 6 0L7 7Zm10 0-3 7a4 4 0 0 0 6 0l-3-7Z" stroke="#6541F2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div style="font:700 16px/1.3 var(--font-base);color:var(--ink);">법무 연계 대응 <span style="font:600 13px/1 var(--font-base);color:var(--violet);">예정</span></div><p style="font:500 15px/1.6 var(--font-base);color:var(--muted);margin:7px 0 0;">지음지식과 연계된 <b style="color:var(--ink);">법무법인</b>과 협업해 법적 조치와 상담까지 지원합니다.</p></div></div>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section id="next" style="position:relative;overflow:hidden;padding:84px 72px 90px;background:radial-gradient(1000px 700px at 15% 0%, #0E2A4D 0%, rgba(14,42,77,0) 55%), #070A12;border-top:1px solid var(--line);">
+  <div style="max-width:1120px;">
+   <div style="font:700 14px/1 var(--font-base);letter-spacing:.12em;color:var(--cyan);">NEXT STEPS</div>
+   <h2 style="font:800 40px/1.2 var(--font-display);letter-spacing:-.02em;color:#fff;margin:14px 0 0;">다음 단계</h2>
+   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:34px;">
+    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px 30px;"><div style="font:800 22px/1 var(--font-display);color:var(--cyan);">01</div><div style="font:700 21px/1.35 var(--font-base);color:#fff;margin-top:12px;">보이스 샘플 추가 확보</div><p style="font:500 15px/1.6 var(--font-base);color:rgba(255,255,255,.66);margin:10px 0 0;">유사도 분석 정확도를 끌어올립니다.</p></div>
+    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px 30px;"><div style="font:800 22px/1 var(--font-display);color:var(--cyan);">02</div><div style="font:700 21px/1.35 var(--font-base);color:#fff;margin-top:12px;">유사 목소리 변별력 강화</div><p style="font:500 15px/1.6 var(--font-base);color:rgba(255,255,255,.66);margin:10px 0 0;">성우 간 비슷한 목소리를 더 정확히 구분합니다.</p></div>
+    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px 30px;"><div style="font:800 22px/1 var(--font-display);color:var(--cyan);">03</div><div style="font:700 21px/1.35 var(--font-base);color:#fff;margin-top:12px;">증거 리포트 자동 생성</div><p style="font:500 15px/1.6 var(--font-base);color:rgba(255,255,255,.66);margin:10px 0 0;">AI 요약 리포트를 고도화합니다.</p></div>
+    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px 30px;"><div style="font:800 22px/1 var(--font-display);color:var(--cyan);">04</div><div style="font:700 21px/1.35 var(--font-base);color:#fff;margin-top:12px;">법무 연계 대응 오픈</div><p style="font:500 15px/1.6 var(--font-base);color:rgba(255,255,255,.66);margin:10px 0 0;">법적 조치·상담 프로세스를 정식 제공합니다.</p></div>
+   </div>
+   <div style="margin-top:42px;font:700 26px/1.4 var(--font-display);color:#fff;">성우의 목소리, <span style="color:var(--cyan);">Voice Guard</span>가 지킵니다.</div>
+   <div style="margin-top:14px;font:500 13.5px/1.6 var(--font-base);color:rgba(255,255,255,.42);">성우협회 귀하<br>지음지식서비스 지음 AI<br>2026.06<br>서비스명 Voice Guard는 가칭입니다.</div>
+  </div>
+ </section>
+
+</main>
+
+<div id="lightbox" style="position:fixed;inset:0;background:rgba(7,10,18,.88);z-index:100;align-items:center;justify-content:center;padding:44px;cursor:zoom-out;backdrop-filter:blur(4px);">
+ <img id="lightbox-img" src="" alt="확대 이미지" style="max-width:94vw;max-height:92vh;border-radius:10px;box-shadow:0 30px 90px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.12);">
+ <div id="lb-close" style="position:fixed;top:24px;right:30px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg></div>
+</div>
 </x-dc>
 </body>
 </html>
